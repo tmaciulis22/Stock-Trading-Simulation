@@ -17,13 +17,16 @@ def load_data(path):
 def plot_data(
     x_values,
     y_values,
+    new_figure=False,
     title=None,
     toggle_grid=False,
     color=None,
     label=None
 ):
+    if new_figure:
+        plt.figure()
     if title is not None:
-        plt.title = title
+        plt.title(title)
     if toggle_grid:
         plt.grid()
     plt.plot(x_values, y_values, color=color, label=label)

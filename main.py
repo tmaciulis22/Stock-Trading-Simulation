@@ -53,5 +53,7 @@ util.toggle_legend()
 util.plot_data(
     df[constants.DATE_COLUMN],
     profits.cumsum(),
-    title="Profits (USD)"
+    title="Profits (USD)",
+    new_figure=True
 )
+
