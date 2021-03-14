@@ -49,7 +49,7 @@ def add_bollinger_shade(
     plt.fill_between(dates, upper_band, lower_band, color="paleturquoise")
 
 
-def toggle_legend(): plt.legend(loc="upper right")
+def toggle_legend(): plt.legend(loc="upper left")
 
 
 def calculate_bollinger_band(df):
