@@ -64,7 +64,6 @@ def calculate_bollinger_band(df):
     return upper_band, moving_avg, lower_band
 
 
-# TODO refactor
 def simulate_strategy(df, upper_band, lower_band):
     should_sell = False
     prices = df[constants.CLOSE_COLUMN]
