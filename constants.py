@@ -1,6 +1,10 @@
-APPL_DATA_PATH = "res/aapl-60-min-data.txt"
+MSFT_DATA_PATH = "res/msft-daily-data.txt"
+AAPL_DATA_PATH = "res/aapl-daily-data.txt"
+BP_DATA_PATH = "res/bp-daily-data.txt"
 
-AAPL_FIGURE_TITLE = "AAPL - 60 min NASDAQ"
+MSFT_TITLE = "MSFT - Daily NASDAQ Price (USD)"
+AAPL_TITLE = "AAPL - Daily NASDAQ Price (USD)"
+BP_TITLE = "BP - Daily NASDAQ Price (USD)"
 
 DATE_FORMAT = "%m/%d/%Y"
 TIME_FORMAT = "%H:%M"
@@ -18,4 +22,6 @@ DOWN_COLUMN = "Down"
 BOLLINGER_PERIOD = 20
 BOLLINGER_MULTIPLIER = 2
 
-TRADING_FEE = 0.02
+TRADING_FEE = 0.01
+
+OFFSET_PARAMETER = 0

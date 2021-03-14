@@ -1,43 +1,57 @@
 import util
 import constants
 
-figure, axes = util.create_subplots()
-figure.suptitle(constants.AAPL_FIGURE_TITLE, fontsize=18)
-
-df = util.load_data(constants.APPL_DATA_PATH)
+df = util.load_data(constants.MSFT_DATA_PATH)
 
 util.plot_data(
-    axes[0],
-    df[constants.DATETIME_COLUMN],
+    df[constants.DATE_COLUMN],
     df[constants.CLOSE_COLUMN],
-    title="Price (USD)",
+    title=constants.MSFT_TITLE,
+    toggle_grid=True,
 )
 
 upper_band, middle_band, lower_band = util.calculate_bollinger_band(df)
 util.plot_data(
-    axes[0],
-    df[constants.DATETIME_COLUMN],
+    df[constants.DATE_COLUMN],
     upper_band,
-    toggle_grid=False,
     color="green",
     label="Upper Bollinger Band"
 )
 util.plot_data(
-    axes[0],
-    df[constants.DATETIME_COLUMN],
+    df[constants.DATE_COLUMN],
     lower_band,
-    toggle_grid=False,
     color="red",
     label="Lower Bollinger Band"
 )
 util.plot_data(
-    axes[0],
-    df[constants.DATETIME_COLUMN],
+    df[constants.DATE_COLUMN],
     middle_band,
-    toggle_grid=False,
     color="black",
     label="Middle Bollinger Band"
 )
-axes[0].fill_between(df[constants.DATETIME_COLUMN], upper_band, lower_band, color="paleturquoise")
-axes[0].legend(loc="upper right")
+util.add_bollinger_shade(df[constants.DATE_COLUMN], upper_band, lower_band)
 
+buys, sells, profits = util.simulate_strategy(df, upper_band, lower_band)
+
+util.scatter_data(
+    df[constants.DATE_COLUMN][buys],
+    df[constants.CLOSE_COLUMN][buys],
+    color="red",
+    label="Buys",
+    marker="v"
+)
+util.scatter_data(
+    df[constants.DATE_COLUMN][sells],
+    df[constants.CLOSE_COLUMN][sells],
+    color="green",
+    label="Sells",
+    marker="^"
+)
+
+util.toggle_legend()
+
+util.plot_data(
+    df[constants.DATE_COLUMN],
+    profits.cumsum(),
+    title="Profits (USD)"
+)

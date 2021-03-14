@@ -14,29 +14,39 @@ def load_data(path):
     return df
 
 
-def create_subplots():
-    return plt.subplots(nrows=2, constrained_layout=True)
-
-
 def plot_data(
-    axis,
     x_values,
     y_values,
     title=None,
-    x_label=None,
-    y_label=None,
-    toggle_grid=True,
+    toggle_grid=False,
     color=None,
     label=None
 ):
-    axis.set_title(title)
+    if title is not None:
+        plt.title = title
     if toggle_grid:
-        axis.grid()
-    if x_label is not None:
-        axis.set_xlabel(x_label)
-    if y_label is not None:
-        axis.set_ylabel(y_label)
-    axis.plot(x_values, y_values, color=color, label=label)
+        plt.grid()
+    plt.plot(x_values, y_values, color=color, label=label)
+
+
+def scatter_data(
+    x_values,
+    y_values,
+    color=None,
+    marker=None,
+    label=None
+): plt.scatter(x_values, y_values, c=color, label=label, marker=marker, s=9**2)
+
+
+def add_bollinger_shade(
+    dates,
+    upper_band,
+    lower_band
+):
+    plt.fill_between(dates, upper_band, lower_band, color="paleturquoise")
+
+
+def toggle_legend(): plt.legend(loc="upper right")
 
 
 def calculate_bollinger_band(df):
@@ -49,3 +59,23 @@ def calculate_bollinger_band(df):
     lower_band = np.round(np.subtract(moving_avg, multiplied_std), 2)
 
     return upper_band, moving_avg, lower_band
+
+
+def simulate_strategy(df, upper_band, lower_band):
+    should_sell = False
+    prices = df[constants.CLOSE_COLUMN]
+    buys = np.full(prices.shape, False)
+    sells = np.full(prices.shape, False)
+    profits = np.zeros_like(prices)
+
+    for i in range(constants.BOLLINGER_PERIOD, len(df.index)):
+        if prices[i] <= lower_band[i] and not should_sell:
+            should_sell = True
+            buys[i] = True
+            profits[i] = -prices[i] - prices[i] * constants.TRADING_FEE
+        if prices[i] >= upper_band[i] and should_sell:
+            should_sell = False
+            sells[i] = True
+            profits[i] = prices[i] - prices[i] * constants.TRADING_FEE
+
+    return buys, sells, profits
