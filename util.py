@@ -64,6 +64,28 @@ def calculate_bollinger_band(df):
     return upper_band, moving_avg, lower_band
 
 
+# def simulate_strategy(df, upper_band, lower_band):
+#     should_sell = False
+#     prices = df[constants.CLOSE_COLUMN]
+#     buys = np.full(prices.shape, False)
+#     sells = np.full(prices.shape, False)
+#     profits = np.zeros_like(prices)
+#     buying_price = 0
+#
+#     for i in range(constants.BOLLINGER_PERIOD, len(df.index)):
+#         if prices[i] <= lower_band[i] and not should_sell:
+#             should_sell = True
+#             buys[i] = True
+#             total_price = prices[i] * constants.NO_OF_SHARES
+#             buying_price = total_price - total_price * constants.TRADING_FEE
+#         if prices[i] >= upper_band[i] and should_sell:
+#             should_sell = False
+#             sells[i] = True
+#             total_price = prices[i] * constants.NO_OF_SHARES
+#             profits[i] = (total_price - total_price * constants.TRADING_FEE) - buying_price
+#
+    # return buys, sells, profits
+
 def simulate_strategy(df, upper_band, lower_band):
     should_sell = False
     prices = df[constants.CLOSE_COLUMN]
@@ -72,13 +94,17 @@ def simulate_strategy(df, upper_band, lower_band):
     profits = np.zeros_like(prices)
 
     for i in range(constants.BOLLINGER_PERIOD, len(df.index)):
+        if should_sell:
+            total_price = prices[i] * constants.NO_OF_SHARES
+            total_prev_price = prices[i-1] * constants.NO_OF_SHARES
+            profits[i] = \
+                (total_price - total_price * constants.TRADING_FEE) \
+                - (total_prev_price - total_prev_price * constants.TRADING_FEE)
         if prices[i] <= lower_band[i] and not should_sell:
             should_sell = True
             buys[i] = True
-            profits[i] = -prices[i] - prices[i] * constants.TRADING_FEE
         if prices[i] >= upper_band[i] and should_sell:
             should_sell = False
             sells[i] = True
-            profits[i] = prices[i] - prices[i] * constants.TRADING_FEE
 
     return buys, sells, profits
