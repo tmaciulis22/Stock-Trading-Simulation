@@ -15,31 +15,40 @@ def calculate_bollinger_band(df):
 
 
 def simulate_strategy(df, upper_band, lower_band):
-    should_sell = False
+    current_position = 0
     prices = df[constants.CLOSE_COLUMN]
-    buys = np.full(prices.shape, False)
-    sells = np.full(prices.shape, False)
-    stop_loss = np.full(prices.shape, False)
+    longs = np.full(prices.shape, False)
+    shorts = np.full(prices.shape, False)
     profits = np.zeros_like(prices)
+    positions = np.zeros_like(prices)
+    stop_loss = np.full(prices.shape, False)
     open_price = -1
 
-    for i in range(constants.BOLLINGER_PERIOD, len(df.index)):
-        if should_sell:
-            total_price = prices[i] * constants.NO_OF_SHARES
-            total_prev_price = prices[i-1] * constants.NO_OF_SHARES
-            profits[i] = \
-                (total_price - total_price * constants.TRADING_FEE) \
-                - (total_prev_price - total_prev_price * constants.TRADING_FEE)
-        if prices[i] <= lower_band[i] and not should_sell:
-            should_sell = True
-            buys[i] = True
-            open_price = prices[i]
-        elif prices[i] >= upper_band[i] and should_sell:
-            should_sell = False
-            sells[i] = True
-        elif prices[i] <= open_price * (1 - constants.STOP_LOSS_FACTOR):
-            should_sell = False
+    for i in range(constants.BOLLINGER_PERIOD, len(prices)):
+        profits[i] = (prices[i] - prices[i-1]) * current_position * constants.NO_OF_SHARES
+
+        if (current_position == 1 and prices[i] <= open_price * (1 - constants.LONG_STOP_LOSS_FACTOR)) \
+                or (current_position == -1 and prices[i] >= open_price * (1 + constants.SHORT_STOP_LOSS_FACTOR)):
+            current_position = 0
             stop_loss[i] = True
             open_price = -1
+            profits[i] -= constants.TRADING_FEE
+            continue
 
-    return buys, sells, stop_loss, profits
+        if prices[i] <= lower_band[i] and current_position != 1:
+            current_position = 1
+            longs[i] = True
+            open_price = prices[i]
+        elif prices[i] >= upper_band[i] and current_position != -1:
+            current_position = -1
+            shorts[i] = True
+            open_price = prices[i]
+        if longs[i] or shorts[i]:
+            profits[i] -= constants.TRADING_FEE * 2
+        positions[i] = current_position
+
+    return longs, shorts, profits, stop_loss
+
+
+def annualised_sharpe(returns, period=252):
+    return np.sqrt(period) * returns.mean() / returns.std()

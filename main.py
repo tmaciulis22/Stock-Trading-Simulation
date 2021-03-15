@@ -32,21 +32,20 @@ util.plot_data(
 )
 util.add_bollinger_shade(df[constants.DATE_COLUMN], upper_band, lower_band)
 
-buys, sells, stop_loss, profits = calculations.simulate_strategy(df, upper_band, lower_band)
-
+longs, shorts, profits, stop_loss = calculations.simulate_strategy(df, upper_band, lower_band)
 util.scatter_data(
-    df[constants.DATE_COLUMN][buys],
-    df[constants.CLOSE_COLUMN][buys],
-    color="red",
-    label="Buys",
-    marker="v"
+    df[constants.DATE_COLUMN][longs],
+    df[constants.CLOSE_COLUMN][longs],
+    color="green",
+    label="Longs(Buys)",
+    marker="^"
 )
 util.scatter_data(
-    df[constants.DATE_COLUMN][sells],
-    df[constants.CLOSE_COLUMN][sells],
-    color="green",
-    label="Sells",
-    marker="^"
+    df[constants.DATE_COLUMN][shorts],
+    df[constants.CLOSE_COLUMN][shorts],
+    color="red",
+    label="Shorts(Sells)",
+    marker="v"
 )
 util.scatter_data(
     df[constants.DATE_COLUMN][stop_loss],
@@ -55,12 +54,12 @@ util.scatter_data(
     label="Stop Loss",
     marker="x"
 )
-
 util.toggle_legend()
 
 util.plot_data(
     df[constants.DATE_COLUMN],
     profits.cumsum(),
     title="Profits (USD)",
-    new_figure=True
+    new_figure=True,
+    toggle_grid=True
 )
