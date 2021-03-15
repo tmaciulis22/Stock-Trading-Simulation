@@ -1,5 +1,6 @@
-import util
 import constants
+import util
+import calculations
 
 df = util.load_data(constants.MSFT_DATA_PATH)
 
@@ -10,7 +11,7 @@ util.plot_data(
     toggle_grid=True,
 )
 
-upper_band, middle_band, lower_band = util.calculate_bollinger_band(df)
+upper_band, middle_band, lower_band = calculations.calculate_bollinger_band(df)
 util.plot_data(
     df[constants.DATE_COLUMN],
     upper_band,
@@ -31,7 +32,7 @@ util.plot_data(
 )
 util.add_bollinger_shade(df[constants.DATE_COLUMN], upper_band, lower_band)
 
-buys, sells, profits = util.simulate_strategy(df, upper_band, lower_band)
+buys, sells, stop_loss, profits = calculations.simulate_strategy(df, upper_band, lower_band)
 
 util.scatter_data(
     df[constants.DATE_COLUMN][buys],
@@ -47,6 +48,13 @@ util.scatter_data(
     label="Sells",
     marker="^"
 )
+util.scatter_data(
+    df[constants.DATE_COLUMN][stop_loss],
+    df[constants.CLOSE_COLUMN][stop_loss],
+    color="black",
+    label="Stop Loss",
+    marker="x"
+)
 
 util.toggle_legend()
 
@@ -56,4 +64,3 @@ util.plot_data(
     title="Profits (USD)",
     new_figure=True
 )
-
