@@ -37,7 +37,7 @@ def simulate_strategy(df, upper_band, lower_band):
         elif prices[i] >= upper_band[i] and should_sell:
             should_sell = False
             sells[i] = True
-        elif prices[i] == open_price * (1 - constants.STOP_LOSS_FACTOR):
+        elif prices[i] <= open_price * (1 - constants.STOP_LOSS_FACTOR):
             should_sell = False
             stop_loss[i] = True
             open_price = -1
