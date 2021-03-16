@@ -126,7 +126,7 @@ util.plot_data(
     title="Profits (USD)",
     new_figure=True,
     toggle_grid=True,
-    label="Profit - unoptimized. Sharpe Ration {0}".format(sharpe_ratio)
+    label="Profit - unoptimized. Sharpe Ratio {0}".format(sharpe_ratio)
 )
 util.plot_data(
     df[constants.DATE_COLUMN],
