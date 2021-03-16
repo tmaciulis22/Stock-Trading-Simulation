@@ -14,7 +14,7 @@ def calculate_bollinger_band(df, period=constants.BOLLINGER_PERIOD, multiplier=c
     return upper_band, moving_avg, lower_band
 
 
-def simulate_strategy(df, upper_band, lower_band):
+def simulate_strategy(df, upper_band, lower_band, period=constants.BOLLINGER_PERIOD):
     current_position = 0
     prices = df[constants.CLOSE_COLUMN]
     longs = np.full(prices.shape, False)
@@ -24,7 +24,7 @@ def simulate_strategy(df, upper_band, lower_band):
     stop_loss = np.full(prices.shape, False)
     open_price = -1
 
-    for i in range(constants.BOLLINGER_PERIOD, len(prices)):
+    for i in range(period, len(prices)):
         profits[i] = (prices[i] - prices[i - 1]) * current_position * constants.NO_OF_SHARES
 
         if (current_position == 1 and prices[i] <= open_price * (1 - constants.LONG_STOP_LOSS_FACTOR)) \
@@ -65,6 +65,7 @@ def find_optimized_strategy(df):
                 df,
                 temp_upper_band,
                 temp_lower_band,
+                period
             )
             if temp_sharpe_ratio > max_sharpe_ratio:
                 max_sharpe_ratio = temp_sharpe_ratio
