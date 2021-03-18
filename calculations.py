@@ -77,9 +77,9 @@ def find_optimized_strategy(df):
         profits, stop_loss, max_sharpe_ratio, optimized_period, optimized_multiplier
 
 
-def annualised_sharpe(returns):
-    multiplication = np.multiply(np.sqrt(returns.size), returns.mean())
-    std = returns.std()
+def annualised_sharpe(profits):
+    multiplication = np.multiply(np.sqrt(profits.size), profits.mean())
+    std = profits.std()
 
     if multiplication == 0 or std == 0:
         return 0
